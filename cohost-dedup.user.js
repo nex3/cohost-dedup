@@ -1,14 +1,12 @@
 // ==UserScript==
 // @name Cohost Dedup
 // @namespace https://nex-3.com
-// @version 0.1
+// @version 1.0
 // @description Deduplicate posts you've already seen on Cohost
 // @author Natalie Weizenbaum
 // @match https://cohost.org/*
 // @match https://*.cohost.org/*
 // ==/UserScript==
-
-// TODO: store seenChostIds in local storage so it persists across pages
 
 const hiddenChostsHeight = '150px';
 
@@ -32,11 +30,11 @@ style.innerText = `
     margin-bottom: -${hiddenChostsHeight};
   }
 
-  .-cohost-dedup-hidden-chost.-cohost-dedup-last > :not(:nth-child(3)) {
+  .-cohost-dedup-hidden-chost.-cohost-dedup-last > :not(div:not(.flex)) {
     display: none;
   }
 
-  .-cohost-dedup-hidden-chost.-cohost-dedup-last > :nth-child(3) {
+  .-cohost-dedup-hidden-chost.-cohost-dedup-last > div:not(.flex) {
     position: absolute;
     bottom: 0;
   }
@@ -49,7 +47,8 @@ style.innerText = `
     text-align: center;
     height: ${hiddenChostsHeight};
     padding-top: calc(${hiddenChostsHeight} - 35px);
-    background: linear-gradient(0deg, rgb(255 255 255 / calc(1 - var(--cohost-dedup-opacity))), white);
+    background: linear-gradient(0deg,
+        rgb(255 255 255 / calc(1 - var(--cohost-dedup-opacity))), white);
     position: relative;
     transition: --cohost-dedup-opacity 0.5s;
     margin-bottom: 10px;
@@ -110,22 +109,40 @@ function hideChost(chost) {
   }
 }
 
-const checkedThreadIds = new Set();
-const seenChostIds = new Set();
+class SessionStoreSet {
+  constructor(name) {
+    this.name = name;
+    const stored = window.sessionStorage.getItem(name);
+    this.set = stored === null ? new Set() : new Set(JSON.parse(stored));
+  }
+
+  has(value) {
+    return this.set.has(value);
+  }
+
+  add(value) {
+    this.set.add(value);
+    window.sessionStorage.setItem(this.name, JSON.stringify([...this.set]));
+  }
+}
+
+const seenChostIds = new SessionStoreSet('-cohost-dedup-seen-chost-ids');
+const shownChostFullIds =
+    new SessionStoreSet('-cohost-dedup-shown-chost-full-ids');
 function checkThread(thread) {
   const threadId = thread.dataset.testid;
   if (!threadId) return;
   console.log(`Checking ${threadId}`);
-  if (checkedThreadIds.has(threadId)) return;
-  checkedThreadIds.add(threadId);
 
   for (const chost of getChosts(thread)) {
     const id = getChostLink(chost);
-    if (seenChostIds.has(id)) {
-      console.log(`Hiding ${id}`);
+    const fullId = `${threadId} // ${id}`;
+    if (seenChostIds.has(id) && !shownChostFullIds.has(fullId)) {
+      console.log(`Hiding chost ${id}`);
       hideChost(chost);
     } else {
       seenChostIds.add(id);
+      shownChostFullIds.add(fullId);
     }
   }
 }
