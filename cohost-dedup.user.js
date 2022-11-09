@@ -8,6 +8,11 @@
 // @match https://*.cohost.org/*
 // ==/UserScript==
 
+// Should be compatible with Firefox (desktop and mobile) and Chrome. To use,
+// install Tampermonkey from https://www.tampermonkey.net/, then visit
+// https://github.com/nex3/cohost-dedup/blob/main/cohost-dedup.user.js and click
+// "Raw" in the top right.
+
 const hiddenChostsHeight = '150px';
 
 const style = document.createElement("style");
