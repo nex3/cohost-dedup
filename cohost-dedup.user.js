@@ -9,8 +9,6 @@
 // ==/UserScript==
 
 // TODO: store seenChostIds in local storage so it persists across pages
-// TODO: avoid using `:has()` for Firefox compat
-// TODO: show novel tags
 
 const hiddenChostsHeight = '150px';
 
@@ -22,15 +20,7 @@ style.innerText = `
     inherits: false;
   }
 
-  .renderIfVisible:has(
-    > div > article
-  ):not(
-    :has(> div > article > div:not(.-cohost-dedup-hidden-chost))
-  ) {
-    display: none;
-  }
-
-  .-cohost-dedup-hidden-chost {
+  .-cohost-dedup-hidden-chost, .-cohost-dedup-hidden-thread {
     display: none;
   }
 
@@ -62,6 +52,7 @@ style.innerText = `
     background: linear-gradient(0deg, rgb(255 255 255 / calc(1 - var(--cohost-dedup-opacity))), white);
     position: relative;
     transition: --cohost-dedup-opacity 0.5s;
+    margin-bottom: 10px;
   }
 
   .-cohost-dedup-link:hover {
@@ -79,6 +70,10 @@ function getChostLink(chost) {
       chost.parentElement.querySelector(":scope > header time > a").href;
 }
 
+function hasTags(chost) {
+  return !!chost.querySelector("a.inline-block.text-gray-400");
+}
+
 function hideChost(chost) {
   chost.classList.add('-cohost-dedup-hidden-chost');
   chost.classList.add('-cohost-dedup-last');
@@ -87,28 +82,32 @@ function hideChost(chost) {
     prev.previousSibling.classList.remove('-cohost-dedup-last');
     prev.href = getChostLink(chost);
     prev.before(chost);
-    return;
+  } else {
+    const a = document.createElement("a");
+    a.classList.add("-cohost-dedup-link");
+    a.href = getChostLink(chost);
+    a.innerText = "...";
+    chost.after(a);
+    a.onclick = event => {
+      const prev = a.previousSibling;
+      prev.classList.remove("-cohost-dedup-hidden-chost");
+      prev.classList.remove("-cohost-dedup-last");
+
+      if (prev.previousSibling?.classList
+          ?.contains("-cohost-dedup-hidden-chost")) {
+        prev.previousSibling.classList.add("-cohost-dedup-last");
+        prev.previousSibling.after(a);
+      } else {
+        a.remove();
+      }
+      return false;
+    };
   }
 
-  const a = document.createElement("a");
-  a.classList.add("-cohost-dedup-link");
-  a.href = getChostLink(chost);
-  a.innerText = "...";
-  chost.after(a);
-  a.onclick = event => {
-    const prev = a.previousSibling;
-    prev.classList.remove("-cohost-dedup-hidden-chost");
-    prev.classList.remove("-cohost-dedup-last");
-
-    if (prev.previousSibling?.classList
-        ?.contains("-cohost-dedup-hidden-chost")) {
-      prev.previousSibling.classList.add("-cohost-dedup-last");
-      prev.previousSibling.after(a);
-    } else {
-      a.remove();
-    }
-    return false;
-  };
+  if (chost.nextSibling.nextSibling.nodeName !== 'DIV' && !hasTags(chost)) {
+    chost.parentElement.parentElement.parentElement.classList
+        .add('-cohost-dedup-hidden-thread');
+  }
 }
 
 const checkedThreadIds = new Set();
