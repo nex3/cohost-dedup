@@ -6,6 +6,11 @@
 // @author Natalie Weizenbaum
 // @match https://cohost.org/*
 // @match https://*.cohost.org/*
+// @exclude https://cohost.org/*/post/*
+// @exclude https://cohost.org/rc/search
+// @exclude https://cohost.org/rc/project/*
+// @exclude https://cohost.org/rc/user/*
+// @exclude https://cohost.org/rc/posts/unpublished*
 // ==/UserScript==
 
 // Should be compatible with Firefox (desktop and mobile) and Chrome. To use,
