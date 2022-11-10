@@ -49,6 +49,11 @@ style.innerText = `
     bottom: 0;
   }
 
+  :is(.-cohost-dedup-hidden-chost, .-cohost-dedup-link) + .prose,
+  :is(.-cohost-dedup-hidden-chost, .-cohost-dedup-link) + .prose + hr {
+    display: none;
+  }
+
   .-cohost-dedup-link {
     --cohost-dedup-opacity: 0.5;
     color: rgb(130 127 124 / var(--cohost-dedup-opacity));
@@ -83,10 +88,18 @@ function hasTags(chost) {
   return !!chost.querySelector("a.inline-block.text-gray-400");
 }
 
+function previousSiblingThroughShowHide(element) {
+  const prev = element.previousSibling;
+  if (prev.nodeName !== 'HR') return prev;
+
+  const next = prev.previousSibling;
+  return next.innerText.match(/^(show|hide) /) ? next.previousSibling : null;
+}
+
 function hideChost(chost) {
   chost.classList.add('-cohost-dedup-hidden-chost');
   chost.classList.add('-cohost-dedup-last');
-  const prev = chost.previousSibling;
+  const prev = previousSiblingThroughShowHide(chost);
   if (prev?.classList?.contains("-cohost-dedup-link")) {
     prev.previousSibling.classList.remove('-cohost-dedup-last');
     prev.href = getChostLink(chost);
@@ -102,10 +115,10 @@ function hideChost(chost) {
       prev.classList.remove("-cohost-dedup-hidden-chost");
       prev.classList.remove("-cohost-dedup-last");
 
-      if (prev.previousSibling?.classList
-          ?.contains("-cohost-dedup-hidden-chost")) {
-        prev.previousSibling.classList.add("-cohost-dedup-last");
-        prev.previousSibling.after(a);
+      const next = previousSiblingThroughShowHide(prev);
+      if (next?.classList?.contains("-cohost-dedup-hidden-chost")) {
+        next.classList.add("-cohost-dedup-last");
+        next.after(a);
       } else {
         a.remove();
       }
