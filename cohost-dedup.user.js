@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name Cohost Dedup
 // @namespace https://nex-3.com
-// @version 1.1
+// @version 1.2
 // @description Deduplicate posts you've already seen on Cohost
 // @author Natalie Weizenbaum
 // @match https://cohost.org/*
@@ -40,11 +40,6 @@ style.innerText = `
     margin-bottom: -${hiddenChostsHeight};
   }
 
-  .-cohost-dedup-tagged-thread .-cohost-dedup-last {
-    height: calc(${hiddenChostsHeight} + 50px);
-    margin-bottom: calc(-${hiddenChostsHeight} - 50px);
-  }
-
   .-cohost-dedup-hidden-chost.-cohost-dedup-last > :not(div:not(.flex)) {
     display: none;
   }
@@ -76,10 +71,6 @@ style.innerText = `
 
   .-cohost-dedup-link:hover {
     --cohost-dedup-opacity: 1;
-  }
-
-  .-cohost-dedup-tagged-thread .-cohost-dedup-link {
-    margin-bottom: 60px;
   }
 `;
 document.head.appendChild(style);
@@ -124,9 +115,6 @@ function hideChost(chost) {
       prev.classList.remove("-cohost-dedup-hidden-chost");
       prev.classList.remove("-cohost-dedup-last");
 
-      a.parentElement.parentElement.parentElement.classList
-          .remove('-cohost-dedup-tagged-thread');
-
       const next = previousSiblingThroughShowHide(prev);
       if (next?.classList?.contains("-cohost-dedup-hidden-chost")) {
         next.classList.add("-cohost-dedup-last");
@@ -141,9 +129,7 @@ function hideChost(chost) {
 
   if (chost.nextSibling.nextSibling.nodeName !== 'DIV') {
     chost.parentElement.parentElement.parentElement.classList.add(
-        hasTags(chost)
-            ? '-cohost-dedup-tagged-thread'
-            : '-cohost-dedup-hidden-thread');
+        '-cohost-dedup-hidden-thread');
   }
 }
 
