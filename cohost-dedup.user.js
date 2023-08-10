@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name Cohost Dedup
 // @namespace https://nex-3.com
-// @version 1.2
+// @version 1.3
 // @description Deduplicate posts you've already seen on Cohost
 // @author Natalie Weizenbaum
 // @match https://cohost.org/*
@@ -174,6 +174,7 @@ function checkThread(thread) {
 const observer = new MutationObserver(mutations => {
   for (const mutation of mutations) {
     for (const node of mutation.addedNodes) {
+      if (!(node instanceof Element)) continue;
       if (node.dataset.view === 'post-preview') {
         checkThread(node);
       } else {
