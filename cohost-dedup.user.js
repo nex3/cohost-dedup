@@ -11,6 +11,7 @@
 // @exclude https://cohost.org/rc/project/*
 // @exclude https://cohost.org/rc/user/*
 // @exclude https://cohost.org/rc/posts/unpublished*
+// @exclude https://cohost.org/rc/liked-posts
 // ==/UserScript==
 
 // Should be compatible with Firefox (desktop and mobile) and Chrome. To use,
