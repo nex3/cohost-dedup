@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name Cohost Dedup
 // @namespace https://nex-3.com
-// @version 1.3
+// @version 1.4
 // @description Deduplicate posts you've already seen on Cohost
 // @author Natalie Weizenbaum
 // @match https://cohost.org/*
