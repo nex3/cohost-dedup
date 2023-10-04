@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name Cohost Dedup
 // @namespace https://nex-3.com
-// @version 1.3
+// @version 1.4
 // @description Deduplicate posts you've already seen on Cohost
 // @author Natalie Weizenbaum
 // @match https://cohost.org/*
@@ -11,6 +11,7 @@
 // @exclude https://cohost.org/rc/project/*
 // @exclude https://cohost.org/rc/user/*
 // @exclude https://cohost.org/rc/posts/unpublished*
+// @exclude https://cohost.org/rc/liked-posts
 // ==/UserScript==
 
 // Should be compatible with Firefox (desktop and mobile) and Chrome. To use,
