@@ -18,6 +18,10 @@
 // install Tampermonkey from https://www.tampermonkey.net/, then visit
 // https://github.com/nex3/cohost-dedup/blob/main/cohost-dedup.user.js and click
 // "Raw" in the top right.
+// If you’re using Safari (e.g. on iOS) the Userscripts Safari extension
+// https://github.com/quoid/userscripts or similar extensions can load this userscript.
+// However note that extensions are not available in Progressive Web Apps mode
+// (PWA, aka. "Add to Home Screen") so this will only work in the Safari app.
 
 const hiddenChostsHeight = '150px';
 
