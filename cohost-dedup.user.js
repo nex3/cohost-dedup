@@ -10,6 +10,7 @@
 // @exclude https://cohost.org/rc/search
 // @exclude https://cohost.org/rc/project/*
 // @exclude https://cohost.org/rc/user/*
+// @exclude https://cohost.org/rc/tagged/*
 // @exclude https://cohost.org/rc/posts/unpublished*
 // @exclude https://cohost.org/rc/liked-posts
 // ==/UserScript==
